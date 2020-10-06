@@ -1,5 +1,5 @@
 import sys
-
+import re
 import ply.lex as lex
 
 tokens = [
@@ -10,7 +10,7 @@ t_OPER = r'(:-)|(,)|(;)'
 
 t_SEPR = r'(\.)|(\()|(\))'
 
-t_ID = r'[a-zA-Z_]*'
+t_ID = r'[a-zA-Z_]+'
 
 t_ignore = ' \t'
 
@@ -26,6 +26,9 @@ def t_error(t):
 
 
 def to_lex(text: str):
+    if not re.search(r'\.\s*$', text):
+        print("Expected . in the end of file")
+        sys.exit()
     lexer = lex.lex()
     lexer.input(text)
     while True:
@@ -60,7 +63,7 @@ class parser:
         if self.tok.value == node:
             self.tok = next(self.lexer)
             return True
-        print("Expected", node, f'at line: {self.tok.lineno}, 'f'pos: {self.tok.lexpos}')
+        print(f'Expected operator at line: {self.tok.lineno}, 'f'pos: {self.tok.lexpos}')
         return False
 
     def HEAD(self):
@@ -112,3 +115,4 @@ def main(name):
 
 if __name__ == "__main__":
     main(sys.argv[1])
+
